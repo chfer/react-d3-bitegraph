@@ -1,0 +1,8 @@
+/*RulerMarker.css*/
+
+.DataReader.analog line.ruler.marker {
+  stroke: #444;
+  stroke-width: 0.5px;
+  stroke-dasharray: 5 5;
+  fill: none;
+}

@@ -1,0 +1,10 @@
+/*AnalogDataLayer.css*/
+
+.dataLayer.analog {
+  stroke: #900;
+  fill: none;
+}
+
+.dataLayer.analog path {
+  /*shape-rendering: crispEdges;*/
+}

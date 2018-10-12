@@ -1,0 +1,25 @@
+/* DataTooltip.css */
+
+.DataTooltip .crossHair {
+  stroke: #c00;
+  stroke-width: 0.5px;
+}
+
+.DataTooltip .text {
+  stroke: none;
+  fill: #eee;
+  font-family: Arial, sans-serif;
+}
+
+.DataTooltip .box {
+  fill: #444;
+  fill-opacity: 0.95;
+  stroke: #000;
+  stroke-opacity: 0.8;
+  stroke-width: 1px;
+}
+
+.DataTooltip .arrow {
+  fill: #444;
+  fill-opacity: 0.95;
+}

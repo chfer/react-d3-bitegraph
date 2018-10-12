@@ -1,0 +1,13 @@
+/* DiscreteDataLayer.css */
+
+g.dataLayer.discrete rect.status.OFF {
+  fill: red;
+}
+
+g.dataLayer.discrete rect.status.ON {
+  fill: green;
+}
+
+g.dataLayer.discrete rect.status.NODATA {
+  fill: none;
+}

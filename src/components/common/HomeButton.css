@@ -1,0 +1,5 @@
+/* src/components/common/HomeButton.css */
+
+.homeButton:hover {
+  opacity: 0.3;
+}

@@ -1,0 +1,7 @@
+/*YAxisLegend.css*/
+
+.legend.yAxis {
+  text-anchor: end;
+  stroke: none;
+  fill: black;
+}

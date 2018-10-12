@@ -1,0 +1,11 @@
+/*main.css*/
+
+body {
+  margin-top: 50px;
+}
+
+#root .BiteGraph {
+  /* outline: 1px dashed #666; */
+  width: 100%;
+  height: auto;
+}
