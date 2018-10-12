@@ -16,7 +16,7 @@ import { styles, dataHeight, dataWidth } from '../common/biteGraphStyles'
 import { withZoom } from '../common/Zoomable.jsx'
 
 export function AnalogBiteGraph(props) {
-  const { data, zoomtransform, datareader, transition, svgRef } = props
+  const { data, zoomTransform, dataReader, transition, svgRef } = props
   const {
     width,
     height,
@@ -30,8 +30,8 @@ export function AnalogBiteGraph(props) {
   const initialTimeScale = createTimeScale(data, dataWidth)
   const dataScale = createAnalogScale(data, dataHeight)
   // apply a zoom transform to the timescale if present
-  const timeScale = zoomtransform
-    ? zoomtransform.rescaleX(initialTimeScale)
+  const timeScale = zoomTransform
+    ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
 
   return (
@@ -57,7 +57,7 @@ export function AnalogBiteGraph(props) {
         transition={transition}
         clipPathId="BiteGraph-analog-clippath"
       />
-      {datareader && (
+      {dataReader && (
         <DataReader
           type="analog"
           timeScale={timeScale}
@@ -72,16 +72,16 @@ export function AnalogBiteGraph(props) {
 }
 
 AnalogBiteGraph.defaultProps = {
-  zoomtransform: null,
-  datareader: true,
+  zoomTransform: null,
+  dataReader: true,
   transition: true,
   svgRef: () => {}
 }
 
 AnalogBiteGraph.propTypes = {
   data: PropTypes.arrayOf(measurementDataType).isRequired,
-  zoomtransform: PropTypes.object, //d3 zoom transform object
-  datareader: PropTypes.bool,
+  zoomTransform: PropTypes.object, //d3 zoom transform object
+  dataReader: PropTypes.bool,
   transition: PropTypes.bool,
   svgRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph SVG
 }

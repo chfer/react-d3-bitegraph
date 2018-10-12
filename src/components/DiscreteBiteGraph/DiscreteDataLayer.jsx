@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 
 import * as d3 from 'd3'
 
-import './DiscreteDataLayer.css'
+// import './DiscreteDataLayer.css'
 import { statusDataType } from '../common/DataTypes'
 
 export default class DiscreteDataLayer extends React.Component {
@@ -24,7 +24,14 @@ export default class DiscreteDataLayer extends React.Component {
   }
 
   renderStatusData() {
-    let { timeScale, dataScale, data, baseVal, transition } = this.props
+    let {
+      timeScale,
+      dataScale,
+      data,
+      colorScale,
+      baseVal,
+      transition
+    } = this.props
 
     // Any existing rects (that are descendants of this.refs.discreteDataLayer) are selected.
     // These rects are joined to new data, returning the matching rects: the update selection.
@@ -59,6 +66,7 @@ export default class DiscreteDataLayer extends React.Component {
         }
       })
       .attr('height', entry => dataScale(baseVal) - dataScale(entry.value))
+      .attr('fill', colorScale)
   }
 
   render() {
@@ -74,6 +82,7 @@ export default class DiscreteDataLayer extends React.Component {
 }
 
 DiscreteDataLayer.defaultProps = {
+  colorScale: () => '#007bff',
   transition: true
 }
 
@@ -81,7 +90,7 @@ DiscreteDataLayer.propTypes = {
   timeScale: PropTypes.func.isRequired,
   dataScale: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(statusDataType).isRequired,
-  valueColors: PropTypes.objectOf(PropTypes.string).isRequired,
+  colorScale: PropTypes.func,
   baseVal: PropTypes.string.isRequired,
   transition: PropTypes.bool,
   clipPathId: PropTypes.string

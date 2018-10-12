@@ -16,7 +16,15 @@ import { styles, dataHeight, dataWidth } from '../common/biteGraphStyles'
 import { withZoom } from '../common/Zoomable.jsx'
 
 export function DiscreteBiteGraph(props) {
-  const { data, domain, zoomtransform, datareader, transition, svgRef } = props
+  const {
+    data,
+    colorScale,
+    domain,
+    zoomTransform,
+    dataReader,
+    transition,
+    svgRef
+  } = props
   const {
     width,
     height,
@@ -30,8 +38,8 @@ export function DiscreteBiteGraph(props) {
   const initialTimeScale = createTimeScale(data, dataWidth)
   const dataScale = createDiscreteScale(domain, dataHeight)
   // apply a zoom transform to the timescale if present
-  const timeScale = zoomtransform
-    ? zoomtransform.rescaleX(initialTimeScale)
+  const timeScale = zoomTransform
+    ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
 
   return (
@@ -54,11 +62,12 @@ export function DiscreteBiteGraph(props) {
         timeScale={timeScale}
         dataScale={dataScale}
         data={data}
+        colorScale={colorScale}
         baseVal={domain[0]}
         transition={transition}
         clipPathId="BiteGraph-discrete-clippath"
       />
-      {datareader && (
+      {dataReader && (
         <DiscreteDataReader
           timeScale={timeScale}
           dataScale={dataScale}
@@ -72,8 +81,9 @@ export function DiscreteBiteGraph(props) {
 }
 
 DiscreteBiteGraph.defaultProps = {
-  zoomtransform: null,
-  datareader: true,
+  colorScale: () => '#007bff',
+  zoomTransform: null,
+  dataReader: true,
   transition: true,
   svgRef: () => {}
 }
@@ -81,8 +91,9 @@ DiscreteBiteGraph.defaultProps = {
 DiscreteBiteGraph.propTypes = {
   data: PropTypes.arrayOf(statusDataType).isRequired,
   domain: PropTypes.arrayOf(PropTypes.string).isRequired,
-  zoomtransform: PropTypes.object, //d3 zoom transform object
-  datareader: PropTypes.bool,
+  colorScale: PropTypes.func,
+  zoomTransform: PropTypes.object, //d3 zoom transform object
+  dataReader: PropTypes.bool,
   transition: PropTypes.bool,
   svgRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph SVG
 }

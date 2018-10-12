@@ -170,8 +170,8 @@ export function withZoom(BiteGraph) {
       {(fetchSvgRef, { zoomTransform, zooming, panning }) => (
         <BiteGraph
           svgRef={fetchSvgRef}
-          zoomtransform={zoomTransform}
-          datareader={!(panning || zooming)}
+          zoomTransform={zoomTransform}
+          dataReader={!(panning || zooming)}
           transition={!(panning || zooming)}
           {...props}
         />

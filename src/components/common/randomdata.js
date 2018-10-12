@@ -27,32 +27,50 @@ const discreteDomain = {
   values: ['NODATA', 'ON', 'OFF']
 }
 
-let timeValues = getTimeValues(analogDomain.time.from, analogDomain.time.to, analogDomain.time.interval)
+export const discreteColorScale = d => {
+  switch (d.value) {
+    case 'ON':
+      return '#28a745'
+    case 'OFF':
+      return '#dc3545'
+    default:
+      return 'none'
+  }
+}
+
+let timeValues = getTimeValues(
+  analogDomain.time.from,
+  analogDomain.time.to,
+  analogDomain.time.interval
+)
 // console.log(`timeValues: ${JSON.stringify(timeValues)}`)
 // console.log(`Number of timeValues: ${timeValues.length}`)
 
 // analog random data
 // function which generates random values between two UTC timestamps for a given interval
-export function analogRandomData () {
-  const randomVal = d3.randomUniform(analogDomain.value.min, analogDomain.value.max)
-  return timeValues.map(v => ({time: v, value: randomVal()}))
+export function analogRandomData() {
+  const randomVal = d3.randomUniform(
+    analogDomain.value.min,
+    analogDomain.value.max
+  )
+  return timeValues.map(v => ({ time: v, value: randomVal() }))
 }
 
-export function analogZeroData () {
-  return timeValues.map(v => ({time: v, value: 0}))
+export function analogZeroData() {
+  return timeValues.map(v => ({ time: v, value: 0 }))
 }
 
 // discrete random data
 // function which generates random values between two UTC timestamps for a given a given array of data values
-export function discreteRandomData (params) {
+export function discreteRandomData(params) {
   const discreteVal = () => {
     const index = Math.floor(d3.randomUniform(discreteDomain.values.length)())
     return discreteDomain.values[index]
   }
-  return timeValues.map(v => ({time: v, value: discreteVal()}))
+  return timeValues.map(v => ({ time: v, value: discreteVal() }))
 }
 
 // function which returns the discrete data domain
-export function getDiscreteDataDomain () {
+export function getDiscreteDataDomain() {
   return discreteDomain.values
 }

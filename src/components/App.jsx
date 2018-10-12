@@ -6,7 +6,8 @@ import { Container, Row, Col, Button } from 'reactstrap'
 import {
   analogRandomData,
   discreteRandomData,
-  getDiscreteDataDomain
+  getDiscreteDataDomain,
+  discreteColorScale
 } from './common/randomdata'
 import AnalogBiteGraph from './AnalogBiteGraph/AnalogBiteGraph.jsx'
 import DiscreteBiteGraph from './DiscreteBiteGraph/DiscreteBiteGraph.jsx'
@@ -48,6 +49,7 @@ export default class App extends React.Component {
             <DiscreteBiteGraph
               data={this.state.discreteData}
               domain={getDiscreteDataDomain()}
+              colorScale={discreteColorScale}
             />
           </Col>
           <Col xs={12} md={1}>
