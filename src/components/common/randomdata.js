@@ -60,6 +60,33 @@ export function analogZeroData() {
   return timeValues.map(v => ({ time: v, value: 0 }))
 }
 
+export const analogSchema = {
+  subsystem: 'TX_CS_635',
+  name: 'txmagtempval',
+  unit: {
+    long: 'degree celsius',
+    short: '°C'
+  },
+  domain: {
+    lowerlimit: {
+      property: 'txmagtemplowlimitref',
+      value: '5.0',
+      severity: 'WARNING'
+    },
+    upperlimit: {
+      property: 'txmagtemphighlimitref',
+      value: '120.0',
+      severity: 'ERROR'
+    },
+    range: {
+      maxValue: '140.0',
+      minValue: '0.0'
+    }
+  },
+  type: 'float',
+  short: 'Magnetron body temperature'
+}
+
 // discrete random data
 // function which generates random values between two UTC timestamps for a given a given array of data values
 export function discreteRandomData(params) {
@@ -73,4 +100,30 @@ export function discreteRandomData(params) {
 // function which returns the discrete data domain
 export function getDiscreteDataDomain() {
   return discreteDomain.values
+}
+
+export const discreteSchema = {
+  subsystem: 'basics',
+  name: 'radiation',
+  domain: {
+    defaultseverity: 'UNKNOWN',
+    item: [
+      {
+        severity: 'OK',
+        value: 'ON'
+      },
+      {
+        severity: 'WARNING',
+        value: 'OFF'
+      }
+    ]
+  },
+  type: 'string',
+  info: {
+    severity: {
+      OK: 'Radiation switched on',
+      WARNING: 'Radiation switched off'
+    }
+  },
+  short: 'Radiation'
 }
