@@ -8,14 +8,20 @@ import analogResponse from '../../data/analog_bejab_txmagtempval.json'
 import { Container, Row, Col, Button } from 'reactstrap'
 import {
   analogRandomData,
-  analogSchema,
+  // analogSchema,
   discreteRandomData,
-  discreteSchema,
+  // discreteSchema,
   // getDiscreteDataDomain,
   discreteColorScale
 } from './common/randomdata'
 
-import { getBiteData, getDiscreteDomain } from '../api/'
+import {
+  getBiteData,
+  getDiscreteDomain,
+  getStateName,
+  getUnit,
+  makeDiscreteColorScale
+} from '../api/'
 import AnalogBiteGraph from './AnalogBiteGraph/AnalogBiteGraph.jsx'
 import DiscreteBiteGraph from './DiscreteBiteGraph/DiscreteBiteGraph.jsx'
 
@@ -30,6 +36,11 @@ export default class App extends React.Component {
       analogData: getBiteData(analogResponse),
       discreteData: getBiteData(discreteResponse)
     }
+    this.discreteDomain = getDiscreteDomain(discreteResponse)
+    this.analogStateName = getStateName(analogResponse)
+    this.analogUnit = getUnit(analogResponse)
+    this.discreteStateName = getStateName(discreteResponse)
+    this.colorScale = makeDiscreteColorScale(discreteResponse)
   }
 
   randomnizeAnalog() {
@@ -43,18 +54,18 @@ export default class App extends React.Component {
   render() {
     // console.log(JSON.stringify(this.state.analogData))
     // console.log(JSON.stringify(this.state.discreteData))
-    console.log(
-      `discrete Domain: ${JSON.stringify(getDiscreteDomain(discreteResponse))}`
-    )
-    const analogName = {
-      short: analogSchema.name,
-      long: analogSchema.short
-    }
+    // console.log(
+    //   `discrete Domain: ${JSON.stringify(getDiscreteDomain(discreteResponse))}`
+    // )
     return (
       <Container>
         <Row className="analogData">
           <Col xs={12} md={11}>
-            <AnalogBiteGraph data={this.state.analogData} name={analogName} />
+            <AnalogBiteGraph
+              data={this.state.analogData}
+              stateName={this.analogStateName}
+              unit={this.analogUnit}
+            />
           </Col>
           <Col xs={12} md={1}>
             <Button onClick={() => this.randomnizeAnalog()}>
@@ -66,8 +77,9 @@ export default class App extends React.Component {
           <Col xs={12} md={11}>
             <DiscreteBiteGraph
               data={this.state.discreteData}
-              domain={getDiscreteDomain(discreteResponse)}
-              colorScale={discreteColorScale}
+              domain={this.discreteDomain}
+              colorScale={this.colorScale}
+              stateName={this.discreteStateName}
             />
           </Col>
           <Col xs={12} md={1}>

@@ -9,3 +9,7 @@ body {
   width: 100%;
   height: auto;
 }
+
+#root .BiteGraph__Stats {
+  /* outline: 1px dashed red; */
+}

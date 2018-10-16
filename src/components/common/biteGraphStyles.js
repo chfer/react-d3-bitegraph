@@ -2,9 +2,9 @@
 
 export const styles = {
   width: 500,
-  height: 300,
+  height: 340,
   padding: {
-    top: 40,
+    top: 80,
     right: 60,
     bottom: 40,
     left: 60

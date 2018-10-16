@@ -1,4 +1,4 @@
-// AnalogBiteGraph.jsx
+// src/components/AnalogBiteGraph/AnalogBiteGraph.jsx
 
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -10,13 +10,23 @@ import DataAxis from '../Axis/DataAxis.jsx'
 import YAxisLegend from '../Axis/YAxisLegend.jsx'
 import AnalogDataLayer from './AnalogDataLayer.jsx'
 import DataReader from './AnalogDataReader.jsx'
+import Stats from '../common/Stats.jsx'
+import AnalogStatValues from './AnalogStatValues.jsx'
 import { measurementDataType } from '../common/DataTypes'
 import { styles, dataHeight, dataWidth } from '../common/biteGraphStyles'
 
 import { withZoom } from '../common/Zoomable.jsx'
 
 export function AnalogBiteGraph(props) {
-  const { data, zoomTransform, dataReader, transition, svgRef } = props
+  const {
+    data,
+    stateName,
+    unit,
+    zoomTransform,
+    dataReader,
+    transition,
+    svgRef
+  } = props
   const {
     width,
     height,
@@ -33,7 +43,7 @@ export function AnalogBiteGraph(props) {
   const timeScale = zoomTransform
     ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
-
+  // console.log(`unit: ${JSON.stringify(unit)}`)
   return (
     <svg
       className="BiteGraph analog"
@@ -49,7 +59,11 @@ export function AnalogBiteGraph(props) {
       />
       <TimeAxis scale={timeScale} dataHeight={dataHeight} />
       <DataAxis scale={dataScale} />
-      <YAxisLegend y={-paddingLeft} dy="1.5em" text="Analog Random Data" />
+      <YAxisLegend
+        y={-paddingLeft}
+        dy="1.5em"
+        text={`${stateName.short} (${unit.short})`}
+      />
       <AnalogDataLayer
         timeScale={timeScale}
         dataScale={dataScale}
@@ -65,8 +79,18 @@ export function AnalogBiteGraph(props) {
           data={data}
           dataWidth={dataWidth}
           dataHeight={dataHeight}
+          unit={unit.short}
         />
       )}
+      <Stats
+        data={data}
+        dataWidth={dataWidth}
+        timeScale={timeScale}
+        position={{ x: `${dataWidth - paddingLeft}`, y: -paddingTop }}
+        renderStatValues={(data, position) => (
+          <AnalogStatValues data={data} unit={unit.short} position={position} />
+        )}
+      />
     </svg>
   )
 }
@@ -80,6 +104,14 @@ AnalogBiteGraph.defaultProps = {
 
 AnalogBiteGraph.propTypes = {
   data: PropTypes.arrayOf(measurementDataType).isRequired,
+  stateName: PropTypes.shape({
+    short: PropTypes.string,
+    long: PropTypes.string
+  }),
+  unit: PropTypes.shape({
+    short: PropTypes.string,
+    long: PropTypes.string
+  }),
   zoomTransform: PropTypes.object, //d3 zoom transform object
   dataReader: PropTypes.bool,
   transition: PropTypes.bool,

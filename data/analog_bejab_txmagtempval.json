@@ -10,7 +10,7 @@
                 "name": "txmagtempval",
                 "unit": {
                     "long": "degree celsius",
-                    "short": "ÃÂ°C"
+                    "short": "°C"
                 },
                 "domain": {
                     "lowerlimit": {

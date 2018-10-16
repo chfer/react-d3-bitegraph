@@ -18,8 +18,9 @@ import { withZoom } from '../common/Zoomable.jsx'
 export function DiscreteBiteGraph(props) {
   const {
     data,
-    colorScale,
     domain,
+    colorScale,
+    stateName,
     zoomTransform,
     dataReader,
     transition,
@@ -57,7 +58,7 @@ export function DiscreteBiteGraph(props) {
       />
       <TimeAxis scale={timeScale} dataHeight={dataHeight} />
       <DataAxis scale={dataScale} />
-      <YAxisLegend y={-paddingLeft} dy="1.5em" text="Status Random Data" />
+      <YAxisLegend y={-paddingLeft} dy="1.5em" text={`${stateName.long}`} />
       <DiscreteDataLayer
         timeScale={timeScale}
         dataScale={dataScale}
@@ -92,6 +93,10 @@ DiscreteBiteGraph.propTypes = {
   data: PropTypes.arrayOf(statusDataType).isRequired,
   domain: PropTypes.arrayOf(PropTypes.string).isRequired,
   colorScale: PropTypes.func,
+  stateName: PropTypes.shape({
+    short: PropTypes.string,
+    long: PropTypes.string
+  }),
   zoomTransform: PropTypes.object, //d3 zoom transform object
   dataReader: PropTypes.bool,
   transition: PropTypes.bool,

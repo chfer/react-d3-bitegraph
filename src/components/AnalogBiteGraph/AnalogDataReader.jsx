@@ -127,12 +127,12 @@ export default class AnalogDataReader extends React.Component {
 
   render() {
     const { position, enabled, prevIndex } = this.state.markers
-    const { data, dataWidth, dataHeight } = this.props
+    const { data, dataWidth, dataHeight, unit } = this.props
     // console.log(`markers: ${JSON.stringify(this.state.markers, null, 2)}`)
     let [timeStr, valueStr] = ['', '']
     if (prevIndex >= 0 && prevIndex < data.length) {
       timeStr = this.timeFormat(data[prevIndex].time)
-      valueStr = this.valueFormat(data[prevIndex].value)
+      valueStr = `${this.valueFormat(data[prevIndex].value)} ${unit}`
     }
     const visible = enabled && this.positionIsValid()
 
@@ -173,6 +173,7 @@ AnalogDataReader.propTypes = {
   data: PropTypes.arrayOf(measurementDataType).isRequired,
   dataWidth: PropTypes.number.isRequired,
   dataHeight: PropTypes.number.isRequired,
+  unit: PropTypes.string,
   valueFormatSpecifier: PropTypes.string,
   timeFormatSpecifier: PropTypes.string
 }
