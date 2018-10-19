@@ -86,7 +86,7 @@ export function AnalogBiteGraph(props) {
         data={data}
         dataWidth={dataWidth}
         timeScale={timeScale}
-        position={{ x: `${dataWidth - paddingLeft}`, y: -paddingTop }}
+        position={{ y: -paddingTop }}
         renderStatValues={(data, position) => (
           <AnalogStatValues data={data} unit={unit.short} position={position} />
         )}

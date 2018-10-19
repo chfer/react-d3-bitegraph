@@ -10,6 +10,8 @@ import DataAxis from '../Axis/DataAxis.jsx'
 import YAxisLegend from '../Axis/YAxisLegend.jsx'
 import DiscreteDataLayer from './DiscreteDataLayer.jsx'
 import DiscreteDataReader from './DiscreteDataReader.jsx'
+import Stats from '../common/Stats.jsx'
+import DiscreteStatValues from './DiscreteStatValues.jsx'
 import { statusDataType } from '../common/DataTypes'
 import { styles, dataHeight, dataWidth } from '../common/biteGraphStyles'
 
@@ -77,6 +79,15 @@ export function DiscreteBiteGraph(props) {
           dataHeight={dataHeight}
         />
       )}
+      <Stats
+        data={data}
+        dataWidth={dataWidth}
+        timeScale={timeScale}
+        position={{ y: -paddingTop }}
+        renderStatValues={(data, position) => (
+          <DiscreteStatValues data={data} domain={domain} position={position} />
+        )}
+      />
     </svg>
   )
 }

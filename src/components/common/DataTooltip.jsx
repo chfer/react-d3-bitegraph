@@ -25,7 +25,8 @@ export default class DataTooltip extends React.Component {
   adjustSize() {
     const { layout } = this.props
     const tooltipText = d3.select(this.refs.dataTooltipText)
-    const bbox = tooltipText.node().getBBox()
+    // const bbox = tooltipText.node().getBBox()
+    const bbox = this.refs.dataTooltipText.getBBox()
     tooltipText.attr(
       'y',
       bbox.height * (-1 - layout.relMarginVert) - layout.yOffset
