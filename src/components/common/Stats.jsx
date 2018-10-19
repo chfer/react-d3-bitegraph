@@ -4,6 +4,7 @@ import React, { Component, Fragment, createRef } from 'react'
 import PropTypes from 'prop-types'
 
 import * as d3 from 'd3'
+import * as R from 'ramda'
 
 import { measurementDataType, statusDataType } from '../common/DataTypes'
 
@@ -11,10 +12,15 @@ import { measurementDataType, statusDataType } from '../common/DataTypes'
 const bisectTimeLeft = d3.bisector(entry => entry.time).left
 const bisectTimeRight = d3.bisector(entry => entry.time).right
 // define a clamp function for the data index
-const clamp = (index, dataCount) =>
-  index === dataCount - 1
-    ? dataCount - 1
-    : Math.min(Math.max(0, index), dataCount - 1)
+const clamp = (index, dataCount) => R.clamp(0, dataCount, index)
+// determine whether the data is discrete or analog
+// if the 'value' of the first element is a 'String' it is considered discrete
+const isDiscreteData = R.compose(
+  R.equals('String'),
+  R.type,
+  R.prop('value'),
+  R.head
+)
 
 export default class Stats extends Component {
   constructor(props) {
@@ -48,8 +54,18 @@ export default class Stats extends Component {
       clamp(bisectTimeRight(data, timeAxisEnd) - 1, data.length)
     ]
     // console.log(`indexStart: ${indexStart} indexEnd: ${indexEnd}`)
-    this.scaledData = data.slice(indexStart, indexEnd + 1)
-    this.timeStart = data[indexStart].time
+    this.scaledData = data.slice(indexStart, indexEnd + 1) // indexEnd must be included => slice to indexEnd + 1
+    // if we have a discrete data and the first datapoint is greater than the start of the timescale
+    // include the datapoint right before the start of the timescale
+    if (
+      isDiscreteData(data) &&
+      indexStart > 0 &&
+      data[indexStart].time.getTime() > timeAxisStart.getTime()
+    ) {
+      this.timeStart = data[indexStart - 1].time
+    } else {
+      this.timeStart = data[indexStart].time
+    }
     this.timeEnd = data[indexEnd].time
     // console.log(
     //   `timeStart: ${this.timeFormat(this.timeStart)} timeEnd: ${this.timeFormat(

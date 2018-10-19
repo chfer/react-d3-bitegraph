@@ -7,18 +7,13 @@ import * as R from 'ramda'
 
 import { statusDataType } from '../common/DataTypes'
 
-const countOccurences = (result, status) => {
-  if (result[status]) {
-    result[status] += 1
-  } else {
-    result[status] = 1
-  }
-  return result
-}
 const initStatusOccurences = R.compose(
   R.mergeAll,
   R.map(R.objOf(R.__, 0))
 )
+
+const countOccurences = (result, status) =>
+  R.evolve({ [status]: R.inc })(result)
 
 const getStatusOccurences = (data, domain) =>
   R.compose(
@@ -26,8 +21,9 @@ const getStatusOccurences = (data, domain) =>
     R.map(R.prop('value'))
   )(data)
 
-const DiscreteStatValues = ({ data, domain, position }) => {
+const DiscreteStatValues = ({ data, domain, colorScale, position }) => {
   const statusOccurences = getStatusOccurences(data, domain)
+  const statusValues = R.tail(domain)
   return (
     <Fragment>
       <text
@@ -35,16 +31,19 @@ const DiscreteStatValues = ({ data, domain, position }) => {
         textAnchor="end"
         y={position.y}
       >
-        {domain.map((value, index) => (
-          <tspan
-            key={`${value}-label`}
-            className="statsStatusLabel"
-            x={position.x}
-            dy={index === 0 ? '3.4em' : '1.2em'}
-            fontWeight="bold"
-          >
-            {`${value}:`}
-          </tspan>
+        {statusValues.map((value, index) => (
+          <Fragment>
+            <tspan
+              key={`${value}-label`}
+              className="statsStatusLabel"
+              fill={colorScale({ value })}
+              x={position.x}
+              dy={index === 0 ? '3.4em' : '1.2em'}
+              fontWeight="bold"
+            >
+              {`${value}`}
+            </tspan>:
+          </Fragment>
         ))}
       </text>
       <text
@@ -52,7 +51,7 @@ const DiscreteStatValues = ({ data, domain, position }) => {
         textAnchor="start"
         y={position.y}
       >
-        {domain.map((value, index) => (
+        {statusValues.map((value, index) => (
           <tspan
             key={`${value}-occurence`}
             className="statsStatusOccurence"
@@ -66,9 +65,14 @@ const DiscreteStatValues = ({ data, domain, position }) => {
   )
 }
 
+DiscreteStatValues.defaultProps = {
+  colorScale: () => 'black'
+}
+
 DiscreteStatValues.propTypes = {
   data: PropTypes.arrayOf(statusDataType).isRequired,
   domain: PropTypes.arrayOf(PropTypes.string).isRequired,
+  colorScale: PropTypes.func,
   position: PropTypes.shape({
     x: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     y: PropTypes.oneOfType([PropTypes.string, PropTypes.number])

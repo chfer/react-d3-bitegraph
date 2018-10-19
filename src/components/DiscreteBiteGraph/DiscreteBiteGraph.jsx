@@ -85,7 +85,12 @@ export function DiscreteBiteGraph(props) {
         timeScale={timeScale}
         position={{ y: -paddingTop }}
         renderStatValues={(data, position) => (
-          <DiscreteStatValues data={data} domain={domain} position={position} />
+          <DiscreteStatValues
+            data={data}
+            domain={domain}
+            colorScale={colorScale}
+            position={position}
+          />
         )}
       />
     </svg>
