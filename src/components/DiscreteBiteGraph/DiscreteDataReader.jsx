@@ -8,7 +8,7 @@ import * as d3 from 'd3'
 import { measurementDataType, statusDataType } from '../common/DataTypes'
 
 import StatusMarker from './StatusMarker.jsx'
-import OverlayRect from '../common/OverlayRect.jsx'
+import DataAreaRect from '../common/DataAreaRect.jsx'
 import DataTooltip from '../common/DataTooltip.jsx'
 import DiscreteDataLayer from './DiscreteDataLayer.jsx'
 
@@ -41,10 +41,34 @@ export default class DataReader extends React.Component {
   }
 
   componentDidMount() {
-    d3.select(this.overlayRect.refs.rect)
-      .on('mouseover', this.showMarkers)
-      .on('mouseout', this.clearMarkers)
-      .on('mousemove', this.readMarker) // You cannot use the synthetic React event onMouseMove, does not work
+    const { getDataRectRef } = this.props
+    // console.log('Mounting DiscreteDataReader ...')
+    // console.log('componentDidMount - dataRectRef:', getDataRectRef())
+    this.dataRectRef = getDataRectRef()
+    this.subscribeToMouseEvents()
+  }
+
+  componentWillUnmount() {
+    // console.log('Unmounting DiscreteDataReader ...')
+    this.unSubscribeToMouseEvents()
+  }
+
+  subscribeToMouseEvents() {
+    if (this.dataRectRef) {
+      d3.select(this.dataRectRef)
+        .on('mouseover', this.showMarkers)
+        .on('mouseout', this.clearMarkers)
+        .on('mousemove', this.readMarker) // You cannot use the synthetic React event onMouseMove, does not work
+    }
+  }
+
+  unSubscribeToMouseEvents() {
+    if (this.dataRectRef) {
+      d3.select(this.dataRectRef)
+        .on('mouseover', null)
+        .on('mouseout', null)
+        .on('mousemove', null) // You cannot use the synthetic React event onMouseMove, does not work
+    }
   }
 
   clearMarkers() {
@@ -98,17 +122,22 @@ export default class DataReader extends React.Component {
       // console.log(`time: ${time}  value: ${value} nextTime: ${nextTime}`)
       // update state
       let nextState = Object.assign({}, this.state)
-      nextState.markers.position = {
-        x: timeScale(time),
-        y: dataScale(value)
-      }
+      const [x, y] = [timeScale(time), dataScale(value)]
+      nextState.markers.position = { x, y }
       // If we deal with the last datapoint add the width of the last status rect
-      nextState.markers.nextX =
+      const nextX =
         timeScale(nextTime) +
         (index === data.length - 1 ? DiscreteDataLayer.lastStatusRectwidth : 0)
+      nextState.markers.nextX = nextX
       nextState.markers.prevIndex = index
+      nextState.markers.enabled = this.validatePosition(x, y, nextX)
       this.setState(nextState)
     }
+  }
+
+  validatePosition(x, y, nextX) {
+    const { dataWidth, dataHeight } = this.props
+    return nextX > 0 && y >= 0 && (x < dataWidth && y < dataHeight)
   }
 
   positionIsValid() {
@@ -116,8 +145,7 @@ export default class DataReader extends React.Component {
       position: { x, y },
       nextX
     } = this.state.markers
-    const { dataWidth, dataHeight } = this.props
-    return nextX > 0 && y >= 0 && (x < dataWidth && y < dataHeight)
+    return this.validatePosition(x, y, nextX)
   }
 
   render() {
@@ -150,21 +178,12 @@ export default class DataReader extends React.Component {
           position={tooltipPosition}
           visible={visible}
         />
-        {/* <OverlayRect/> must be last, otherwise the event capture will stop when the mouse is on components that are drawn on top of the <OverlayRect/> */}
-        <OverlayRect
-          width={dataWidth}
-          height={dataHeight}
-          ref={input => {
-            this.overlayRect = input
-          }}
-        />
       </g>
     )
   }
 }
 
 DataReader.defaultProps = {
-  valueFormatSpecifier: '.1f',
   timeFormatSpecifier: '%a %d-%m-%Y %H:%M:%S'
 }
 
@@ -177,5 +196,6 @@ DataReader.propTypes = {
   ]).isRequired,
   dataWidth: PropTypes.number.isRequired,
   dataHeight: PropTypes.number.isRequired,
+  getDataRectRef: PropTypes.func.isRequired,
   timeFormatSpecifier: PropTypes.string
 }

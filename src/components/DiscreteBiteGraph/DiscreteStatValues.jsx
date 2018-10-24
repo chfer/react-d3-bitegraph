@@ -32,9 +32,8 @@ const DiscreteStatValues = ({ data, domain, colorScale, position }) => {
         y={position.y}
       >
         {statusValues.map((value, index) => (
-          <Fragment>
+          <Fragment key={`label-${index}`}>
             <tspan
-              key={`${value}-label`}
               className="statsStatusLabel"
               fill={colorScale({ value })}
               x={position.x}
@@ -53,7 +52,7 @@ const DiscreteStatValues = ({ data, domain, colorScale, position }) => {
       >
         {statusValues.map((value, index) => (
           <tspan
-            key={`${value}-occurence`}
+            key={`occurence-${index}`}
             className="statsStatusOccurence"
             x={position.x}
             dy={index === 0 ? '3.4em' : '1.2em'}

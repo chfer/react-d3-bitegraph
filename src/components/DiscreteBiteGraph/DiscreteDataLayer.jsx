@@ -67,6 +67,7 @@ export default class DiscreteDataLayer extends React.Component {
       })
       .attr('height', entry => dataScale(baseVal) - dataScale(entry.value))
       .attr('fill', colorScale)
+      .attr('pointer-events', 'none') // Let pass all mouse events through the multiple <rect /> for data-reading, zooming and panning
   }
 
   render() {

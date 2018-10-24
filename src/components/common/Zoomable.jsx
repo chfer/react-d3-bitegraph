@@ -43,7 +43,7 @@ export class Zoomable extends React.Component {
   constructor(props) {
     super(props)
 
-    this.svgRef = null
+    this.zoombaseRef = null
     this.state = {
       zooming: false,
       zoomScale: 1,
@@ -109,17 +109,23 @@ export class Zoomable extends React.Component {
 
   resetZoom() {
     // console.log(`Resetting zoom if possible ...`)
-    if (this.svgRef && this.zoom) {
-      d3.select(this.svgRef)
+    if (this.zoombaseRef && this.zoom) {
+      d3.select(this.zoombaseRef)
         .transition()
         .call(this.zoom.transform, d3.zoomIdentity)
     }
   }
 
   componentDidMount() {
-    if (this.svgRef && this.zoom) {
+    if (this.zoombaseRef && this.zoom) {
       // console.log('Attaching zoom to mounted svg element ...')
-      d3.select(this.svgRef).call(this.zoom)
+      // set the area which will receive the mouse events for zooming
+      // this will be the <rect class="dataRect />" within the single graph svg
+      // so a <DataAreaRect width={dataWidth} height={dataHeight} /> component must be rendered
+      // in the child component, which is a graph rendered as an svg
+      d3.select(this.zoombaseRef)
+        // .select('rect.dataAreaRect')
+        .call(this.zoom)
     }
   }
 
@@ -131,13 +137,13 @@ export class Zoomable extends React.Component {
       panning,
       zoomTransform
     } = this.state
-    const fetchSvgRef = element => {
-      this.svgRef = element
+    const fetchZoombaseRef = element => {
+      this.zoombaseRef = element
     }
     return (
       <BiteGraphContainer>
         <BiteGraphDataContainer {...this.state}>
-          {this.props.children(fetchSvgRef, this.state)}
+          {this.props.children(fetchZoombaseRef, this.state)}
         </BiteGraphDataContainer>
         <BiteGraphControlsContainer>
           {zoomScale > 1 && (
@@ -167,9 +173,9 @@ Zoomable.propTypes = {
 export function withZoom(BiteGraph) {
   return props => (
     <Zoomable maxZoomLevel={props.data.length / 2}>
-      {(fetchSvgRef, { zoomTransform, zooming, panning }) => (
+      {(fetchZoombaseRef, { zoomTransform, zooming, panning }) => (
         <BiteGraph
-          svgRef={fetchSvgRef}
+          zoombaseRef={fetchZoombaseRef}
           zoomTransform={zoomTransform}
           dataReader={!(panning || zooming)}
           transition={!(panning || zooming)}

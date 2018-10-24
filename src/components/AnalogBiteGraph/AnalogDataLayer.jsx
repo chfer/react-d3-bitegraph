@@ -38,6 +38,10 @@ export default class AnalogDataLayer extends React.Component {
         <path
           ref="dataPath"
           clipPath={clipPathId ? `url(#${clipPathId})` : ''}
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          pointerEvents="none" // this is necessary for all mose events to pass through the stroke of the datalayer <path />
         />
       </g>
     )

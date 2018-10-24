@@ -21,6 +21,7 @@ const RulerMarker = props => {
       x2={position.x}
       y2={position.y}
       style={{ display: visible ? null : 'none' }}
+      pointerEvents="none" // this is necessary for all mose events to pass through the <line />
     />
   )
 }

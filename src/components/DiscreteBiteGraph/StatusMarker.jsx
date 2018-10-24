@@ -19,6 +19,7 @@ const StatusMarker = ({ color, opacity, position, width, height, visible }) => {
       stroke="none"
       fill={color}
       fillOpacity={opacity}
+      pointerEvents="none" // this is necessary for all mose events to pass through <rect /> />
     />
   )
 }

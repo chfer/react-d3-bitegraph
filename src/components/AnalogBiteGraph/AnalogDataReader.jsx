@@ -9,7 +9,6 @@ import { measurementDataType } from '../common/DataTypes'
 
 import DataPointMarker from './DataPointMarker.jsx'
 import RulerMarker from './RulerMarker.jsx'
-import OverlayRect from '../common/OverlayRect.jsx'
 import DataTooltip from '../common/DataTooltip.jsx'
 
 export default class AnalogDataReader extends React.Component {
@@ -38,13 +37,39 @@ export default class AnalogDataReader extends React.Component {
     // Define data formatters
     this.valueFormat = d3.format(props.valueFormatSpecifier)
     this.timeFormat = d3.utcFormat(props.timeFormatSpecifier)
+
+    this.dataRectRef = null
   }
 
   componentDidMount() {
-    d3.select(this.overlayRect.refs.rect)
-      .on('mouseover', this.showMarkers)
-      .on('mouseout', this.clearMarkers)
-      .on('mousemove', this.readMarker) // You cannot use the synthetic React event onMouseMove, does not work
+    const { getDataRectRef } = this.props
+    // console.log('Mounting AnalogDataReader ...')
+    // console.log('componentDidMount - dataRectRef:', getDataRectRef())
+    this.dataRectRef = getDataRectRef()
+    this.subscribeToMouseEvents()
+  }
+
+  componentWillUnmount() {
+    // console.log('Unmounting AnalogDataReader ...')
+    this.unSubscribeToMouseEvents()
+  }
+
+  subscribeToMouseEvents() {
+    if (this.dataRectRef) {
+      d3.select(this.dataRectRef)
+        .on('mouseover', this.showMarkers)
+        .on('mouseout', this.clearMarkers)
+        .on('mousemove', this.readMarker) // You cannot use the synthetic React event onMouseMove, does not work
+    }
+  }
+
+  unSubscribeToMouseEvents() {
+    if (this.dataRectRef) {
+      d3.select(this.dataRectRef)
+        .on('mouseover', null)
+        .on('mouseout', null)
+        .on('mousemove', null) // You cannot use the synthetic React event onMouseMove, does not work
+    }
   }
 
   clearMarkers() {
@@ -66,10 +91,12 @@ export default class AnalogDataReader extends React.Component {
   }
 
   readMarker() {
-    // get SVG coordinates of the mouse in the OverlayRect
-    let [x, y] = d3.mouse(this.refs.dataReaderAnalog)
-    // console.log(`readMarker => x: ${x}  y: ${y}`)
-    this.updateMarkerPosition(x, y)
+    if (this.dataRectRef) {
+      // get SVG coordinates of the mouse in the OverlayRect
+      let [x, y] = d3.mouse(this.dataRectRef)
+      // console.log(`readMarker => x: ${x}  y: ${y}`)
+      this.updateMarkerPosition(x, y)
+    }
   }
 
   updateMarkerPosition(x, y) {
@@ -100,22 +127,20 @@ export default class AnalogDataReader extends React.Component {
     if (index !== prevIndex) {
       // determine X and Y of the datapoint at that index
       let { time, value } = data[index]
-      // console.log(`time: ${time}  value: ${value}`)
+      // console.log(
+      //   `Updating the marker postion to => time: ${time}  value: ${value}`
+      // )
       // update state
       let nextState = Object.assign({}, this.state)
-      nextState.markers.position = {
-        x: timeScale(time),
-        y: dataScale(value)
-      }
+      const [x, y] = [timeScale(time), dataScale(value)]
+      nextState.markers.enabled = this.validatePosition(x, y)
+      nextState.markers.position = { x, y }
       nextState.markers.prevIndex = index
       this.setState(nextState)
     }
   }
 
-  positionIsValid() {
-    const {
-      position: { x, y }
-    } = this.state.markers
+  validatePosition(x, y) {
     const { dataWidth, dataHeight } = this.props
 
     return (
@@ -123,6 +148,14 @@ export default class AnalogDataReader extends React.Component {
       (x >= 0 && y >= 0) &&
       (x < dataWidth && y < dataHeight)
     )
+  }
+
+  positionIsValid() {
+    const {
+      position: { x, y }
+    } = this.state.markers
+
+    return this.validatePosition(x, y)
   }
 
   render() {
@@ -135,7 +168,13 @@ export default class AnalogDataReader extends React.Component {
       valueStr = `${this.valueFormat(data[prevIndex].value)} ${unit}`
     }
     const visible = enabled && this.positionIsValid()
-
+    // console.group('Rendering AnalogDataReader ...')
+    // console.log(position)
+    // console.log(`visible: ${visible}`)
+    // console.log(
+    //   `enabled: ${enabled} positionIsValid: ${this.positionIsValid()}`
+    // )
+    // console.groupEnd()
     return (
       <g className="DataReader analog" ref="dataReaderAnalog">
         <DataPointMarker position={position} visible={visible} />
@@ -148,14 +187,6 @@ export default class AnalogDataReader extends React.Component {
           textLines={[timeStr, valueStr]}
           position={position}
           visible={visible}
-        />
-        {/* <OverlayRect/> must be last, otherwise the event capture will stop when the mouse is on components that are drawn on top of the <OverlayRect/> */}
-        <OverlayRect
-          width={dataWidth}
-          height={dataHeight}
-          ref={input => {
-            this.overlayRect = input
-          }}
         />
       </g>
     )
@@ -174,6 +205,7 @@ AnalogDataReader.propTypes = {
   dataWidth: PropTypes.number.isRequired,
   dataHeight: PropTypes.number.isRequired,
   unit: PropTypes.string,
+  getDataRectRef: PropTypes.func.isRequired,
   valueFormatSpecifier: PropTypes.string,
   timeFormatSpecifier: PropTypes.string
 }

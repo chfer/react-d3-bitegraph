@@ -17,6 +17,7 @@ const DataPointMarker = ({ radius, position, visible }) => {
       r={radius}
       cx={position.x}
       cy={position.y}
+      pointerEvents="none" // this is necessary for all mose events to pass through circle />
     />
   )
 }
@@ -24,7 +25,7 @@ const DataPointMarker = ({ radius, position, visible }) => {
 export default DataPointMarker
 
 DataPointMarker.defaultProps = {
-  radius: 2
+  radius: 3
 }
 
 DataPointMarker.propTypes = {

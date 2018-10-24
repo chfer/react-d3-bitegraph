@@ -69,12 +69,14 @@ export default class DataTooltip extends React.Component {
           rx={layout.bdrRad}
           ry={layout.bdrRad}
           ref="dataTooltipBox"
+          pointerEvents="none" // this is necessary for all mose events to pass through the <rect />
         />
-        <path className="arrow" ref="dataTooltipArrow" />
+        <path className="arrow" ref="dataTooltipArrow" pointerEvents="none" />
         <text
           className="text"
           style={{ fontSize: layout.fontSize, textAnchor: 'middle' }}
           ref="dataTooltipText"
+          pointerEvents="none" // this is necessary for all mose events to pass through the <text />
         >
           <tspan className="first line" x="0" dy="1.0em">
             {textLines[0]}

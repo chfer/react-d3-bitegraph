@@ -15,6 +15,8 @@ ClipPath.defaultProps = {
 }
 
 ClipPath.propTypes = {
+  x: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  y: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   id: PropTypes.string.isRequired

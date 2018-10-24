@@ -4,6 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { createTimeScale, createDiscreteScale } from '../common/biteGraphScales'
+import DataAreaRect from '../common/DataAreaRect.jsx'
 import ClipPath from '../common/ClipPath.jsx'
 import TimeAxis from '../Axis/TimeAxis.jsx'
 import DataAxis from '../Axis/DataAxis.jsx'
@@ -26,7 +27,7 @@ export function DiscreteBiteGraph(props) {
     zoomTransform,
     dataReader,
     transition,
-    svgRef
+    zoombaseRef
   } = props
   const {
     width,
@@ -44,15 +45,25 @@ export function DiscreteBiteGraph(props) {
   const timeScale = zoomTransform
     ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
-
+  // Define a reference to an overlay rectangle which contains the data area of the graph
+  // this overlay rectangle will capture mouse events for the DataReader component and zoom
+  let dataAreaRectRef = null
   return (
     <svg
-      className="BiteGraph analog"
+      className="BiteGraph discrete"
       width="100%"
       height="100%"
       viewBox={`-${paddingLeft} -${paddingTop} ${width} ${height}`}
-      ref={svgRef}
     >
+      {/* render a Data rectangle which will define the (data-)area where mouse events will be captured for data reading, zooming and panning*/}
+      <DataAreaRect
+        width={dataWidth}
+        height={dataHeight}
+        dataAreaRectRef={el => {
+          zoombaseRef(el)
+          dataAreaRectRef = el
+        }}
+      />
       <ClipPath
         width={dataWidth}
         height={dataHeight}
@@ -77,6 +88,7 @@ export function DiscreteBiteGraph(props) {
           data={data}
           dataWidth={dataWidth}
           dataHeight={dataHeight}
+          getDataRectRef={() => dataAreaRectRef}
         />
       )}
       <Stats
@@ -116,7 +128,7 @@ DiscreteBiteGraph.propTypes = {
   zoomTransform: PropTypes.object, //d3 zoom transform object
   dataReader: PropTypes.bool,
   transition: PropTypes.bool,
-  svgRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph SVG
+  zoombaseRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph <DataAreaRect />
 }
 
 export default withZoom(DiscreteBiteGraph)

@@ -1,7 +1,8 @@
 /*AnalogDataLayer.css*/
 
 .dataLayer.analog {
-  stroke: #900;
+  /* stroke: #900; */
+  stroke: #007bff;
   fill: none;
 }
 

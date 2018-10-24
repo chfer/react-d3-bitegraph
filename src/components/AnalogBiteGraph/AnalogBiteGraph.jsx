@@ -4,6 +4,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { createTimeScale, createAnalogScale } from '../common/biteGraphScales'
+import DataAreaRect from '../common/DataAreaRect.jsx'
 import ClipPath from '../common/ClipPath.jsx'
 import TimeAxis from '../Axis/TimeAxis.jsx'
 import DataAxis from '../Axis/DataAxis.jsx'
@@ -25,7 +26,7 @@ export function AnalogBiteGraph(props) {
     zoomTransform,
     dataReader,
     transition,
-    svgRef
+    zoombaseRef
   } = props
   const {
     width,
@@ -44,14 +45,25 @@ export function AnalogBiteGraph(props) {
     ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
   // console.log(`unit: ${JSON.stringify(unit)}`)
+  // Define a reference to an overlay rectangle which contains the data area of the graph
+  // this overlay rectangle will capture mouse events for the DataReader component and zoom
+  let dataAreaRectRef = null
   return (
     <svg
       className="BiteGraph analog"
       width="100%"
       height="100%"
       viewBox={`-${paddingLeft} -${paddingTop} ${width} ${height}`}
-      ref={svgRef}
     >
+      {/* render a Data rectangle which will define the (data-)area where mouse events will be captured for data reading, zooming and panning*/}
+      <DataAreaRect
+        width={dataWidth}
+        height={dataHeight}
+        dataAreaRectRef={el => {
+          zoombaseRef(el)
+          dataAreaRectRef = el
+        }}
+      />
       <ClipPath
         width={dataWidth}
         height={dataHeight}
@@ -80,6 +92,7 @@ export function AnalogBiteGraph(props) {
           dataWidth={dataWidth}
           dataHeight={dataHeight}
           unit={unit.short}
+          getDataRectRef={() => dataAreaRectRef}
         />
       )}
       <Stats
@@ -98,8 +111,7 @@ export function AnalogBiteGraph(props) {
 AnalogBiteGraph.defaultProps = {
   zoomTransform: null,
   dataReader: true,
-  transition: true,
-  svgRef: () => {}
+  transition: true
 }
 
 AnalogBiteGraph.propTypes = {
@@ -115,7 +127,8 @@ AnalogBiteGraph.propTypes = {
   zoomTransform: PropTypes.object, //d3 zoom transform object
   dataReader: PropTypes.bool,
   transition: PropTypes.bool,
-  svgRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph SVG
+  zoombaseRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph <DataAreaRect />
 }
 
+// export default AnalogBiteGraph
 export default withZoom(AnalogBiteGraph)
