@@ -9,7 +9,7 @@ const getTimeValues = (start, stop, interval) => {
 }
 
 let time = {
-  from: '20-11-2016', // UTC Date must be in format DD-mm-YYYY
+  from: '20-11-2015', // UTC Date must be in format DD-mm-YYYY
   to: '21-11-2016', // UTC Date must be in format DD-mm-YYYY
   interval: 15 * 60 // in seconds
 }
@@ -17,7 +17,7 @@ let time = {
 const analogDomain = {
   time,
   value: {
-    min: 0, // minimum analog value
+    min: 20, // minimum analog value
     max: 60 // maximum analog value
   }
 }

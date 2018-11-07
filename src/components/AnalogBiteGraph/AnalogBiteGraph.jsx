@@ -3,6 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { getVisibleDataSlice, simplifyAnalogData } from '../common/helpers'
 import { createTimeScale, createAnalogScale } from '../common/biteGraphScales'
 import DataAreaRect from '../common/DataAreaRect.jsx'
 import ClipPath from '../common/ClipPath.jsx'
@@ -25,7 +26,6 @@ export function AnalogBiteGraph(props) {
     unit,
     zoomTransform,
     dataReader,
-    transition,
     zoombaseRef
   } = props
   const {
@@ -44,10 +44,19 @@ export function AnalogBiteGraph(props) {
   const timeScale = zoomTransform
     ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
+  let { visibleData } = getVisibleDataSlice(data, dataWidth, timeScale, 10)
+  console.log(`visible data slice: ${visibleData.length} points ...`)
+  const MAXPIXELCOUNT = 500
+  if (visibleData.length > MAXPIXELCOUNT) {
+    // simplify the data
+    visibleData = simplifyAnalogData(visibleData, MAXPIXELCOUNT)
+    console.log(`Simplified the data to ${visibleData.length} points ...`)
+  }
   // console.log(`unit: ${JSON.stringify(unit)}`)
   // Define a reference to an overlay rectangle which contains the data area of the graph
   // this overlay rectangle will capture mouse events for the DataReader component and zoom
   let dataAreaRectRef = null
+  console.log(`zoomTransform: ${JSON.stringify(zoomTransform)}`)
   return (
     <svg
       className="BiteGraph analog"
@@ -64,11 +73,6 @@ export function AnalogBiteGraph(props) {
           dataAreaRectRef = el
         }}
       />
-      <ClipPath
-        width={dataWidth}
-        height={dataHeight}
-        id="BiteGraph-analog-clippath"
-      />
       <TimeAxis scale={timeScale} dataHeight={dataHeight} />
       <DataAxis scale={dataScale} />
       <YAxisLegend
@@ -76,11 +80,15 @@ export function AnalogBiteGraph(props) {
         dy="1.5em"
         text={`${stateName.short} (${unit.short})`}
       />
+      <ClipPath
+        width={dataWidth}
+        height={dataHeight}
+        id="BiteGraph-analog-clippath"
+      />
       <AnalogDataLayer
         timeScale={timeScale}
         dataScale={dataScale}
-        data={data}
-        transition={transition}
+        data={visibleData}
         clipPathId="BiteGraph-analog-clippath"
       />
       {dataReader && (
@@ -88,7 +96,7 @@ export function AnalogBiteGraph(props) {
           type="analog"
           timeScale={timeScale}
           dataScale={dataScale}
-          data={data}
+          data={visibleData}
           dataWidth={dataWidth}
           dataHeight={dataHeight}
           unit={unit.short}
@@ -110,8 +118,7 @@ export function AnalogBiteGraph(props) {
 
 AnalogBiteGraph.defaultProps = {
   zoomTransform: null,
-  dataReader: true,
-  transition: true
+  dataReader: true
 }
 
 AnalogBiteGraph.propTypes = {
@@ -126,7 +133,6 @@ AnalogBiteGraph.propTypes = {
   }),
   zoomTransform: PropTypes.object, //d3 zoom transform object
   dataReader: PropTypes.bool,
-  transition: PropTypes.bool,
   zoombaseRef: PropTypes.func // used by Parent components to retrieve the dom node of the BiteGraph <DataAreaRect />
 }
 

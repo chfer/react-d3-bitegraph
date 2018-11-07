@@ -37,7 +37,7 @@ const DiscreteStatValues = ({ data, domain, colorScale, position }) => {
               className="statsStatusLabel"
               fill={colorScale({ value })}
               x={position.x}
-              dy={index === 0 ? '3.4em' : '1.2em'}
+              dy={index === 0 ? '4.6em' : '1.2em'}
               fontWeight="bold"
             >
               {`${value}`}
@@ -55,7 +55,7 @@ const DiscreteStatValues = ({ data, domain, colorScale, position }) => {
             key={`occurence-${index}`}
             className="statsStatusOccurence"
             x={position.x}
-            dy={index === 0 ? '3.4em' : '1.2em'}
+            dy={index === 0 ? '4.6em' : '1.2em'}
             dx="0.5em"
           >{`${statusOccurences[value]}`}</tspan>
         ))}

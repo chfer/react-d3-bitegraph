@@ -4,7 +4,7 @@ export const styles = {
   width: 500,
   height: 340,
   padding: {
-    top: 80,
+    top: 100,
     right: 60,
     bottom: 40,
     left: 60

@@ -23,7 +23,7 @@ const AnalogStatValues = ({ data, unit, position, valueFormatSpecifier }) => {
         <tspan
           className="minimumLabel"
           x={position.x}
-          dy="3.4em"
+          dy="4.6em"
           fontWeight="bold"
         >
           {`Minimum:`}
@@ -53,7 +53,7 @@ const AnalogStatValues = ({ data, unit, position, valueFormatSpecifier }) => {
         <tspan
           className="minimumValue"
           x={position.x}
-          dy="3.4em"
+          dy="4.6em"
           dx="0.5em"
         >{`${valueFormat(minimum)} ${unit}`}</tspan>
 

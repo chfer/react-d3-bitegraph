@@ -3,25 +3,23 @@
 import React from 'react'
 import * as d3 from 'd3'
 
+import './Axis.css'
+
 export default class DataAxis extends React.Component {
-
-  componentDidMount () {
+  componentDidMount() {
     this.renderAxis()
   }
 
-  componentDidUpdate () {
+  componentDidUpdate() {
     this.renderAxis()
   }
 
-  renderAxis () {
+  renderAxis() {
     let d3Axis = d3.axisLeft(this.props.scale)
     d3.select(this.refs.axisData).call(d3Axis)
   }
 
-  render () {
-    return (
-      <g className="axis data" ref="axisData">
-      </g>
-    )
+  render() {
+    return <g className="axis data" ref="axisData" />
   }
 }

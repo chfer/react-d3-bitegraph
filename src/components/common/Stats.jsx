@@ -6,21 +6,8 @@ import PropTypes from 'prop-types'
 import * as d3 from 'd3'
 import * as R from 'ramda'
 
+import { getVisibleDataSlice, isDiscreteData } from '../common/helpers'
 import { measurementDataType, statusDataType } from '../common/DataTypes'
-
-// Define bisector functions for the Time
-const bisectTimeLeft = d3.bisector(entry => entry.time).left
-const bisectTimeRight = d3.bisector(entry => entry.time).right
-// define a clamp function for the data index
-const clamp = (index, dataCount) => R.clamp(0, dataCount, index)
-// determine whether the data is discrete or analog
-// if the 'value' of the first element is a 'String' it is considered discrete
-const isDiscreteData = R.compose(
-  R.equals('String'),
-  R.type,
-  R.prop('value'),
-  R.head
-)
 
 export default class Stats extends Component {
   constructor(props) {
@@ -44,17 +31,13 @@ export default class Stats extends Component {
 
   updateDataDomain() {
     const { data, dataWidth, timeScale } = this.props
-    const [timeAxisStart, timeAxisEnd] = [
-      timeScale.invert(0),
-      timeScale.invert(dataWidth)
-    ]
-    // determine start and end index of the time Axis
-    const [indexStart, indexEnd] = [
-      clamp(bisectTimeRight(data, timeAxisStart), data.length),
-      clamp(bisectTimeRight(data, timeAxisEnd) - 1, data.length)
-    ]
-    // console.log(`indexStart: ${indexStart} indexEnd: ${indexEnd}`)
-    this.scaledData = data.slice(indexStart, indexEnd + 1) // indexEnd must be included => slice to indexEnd + 1
+    const {
+      timeAxisStart,
+      indexStart,
+      indexEnd,
+      visibleData
+    } = getVisibleDataSlice(data, dataWidth, timeScale)
+    this.scaledData = visibleData
     // if we have a discrete data and the first datapoint is greater than the start of the timescale
     // include the datapoint right before the start of the timescale
     if (
@@ -108,6 +91,9 @@ export default class Stats extends Component {
             <tspan className="timeTo" x={x} dy="1.2em" fontWeight="bold">
               {`To:`}
             </tspan>
+            <tspan className="timeTo" x={x} dy="1.2em" fontWeight="bold">
+              {`Number of datapoints:`}
+            </tspan>
           </text>
           <text
             className="BiteGraph__StatTimevalues"
@@ -121,9 +107,11 @@ export default class Stats extends Component {
               dy="1.0em"
               dx="0.5em"
             >{`${timeFormat(timeStart)}`}</tspan>
-
             <tspan className="timeTo" x={x} dy="1.2em" dx="0.5em">
               {`${timeFormat(timeEnd)}`}
+            </tspan>
+            <tspan className="timeTo" x={x} dy="1.2em" dx="0.5em">
+              {`${this.scaledData.length}`}
             </tspan>
           </text>
           {renderStatValues(scaledData, { x, y })}

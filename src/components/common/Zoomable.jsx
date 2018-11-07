@@ -59,7 +59,7 @@ export class Zoomable extends React.Component {
     // console.log('Initializing zoom ...')
     const zoomStartHandler = () => {
       const eventType = d3.event.sourceEvent ? d3.event.sourceEvent.type : ''
-      // console.log(`Zoom START - ${eventType} (${new Date().getTime()})`)
+      console.log(`Zoom START - ${eventType} (${new Date().getTime()})`)
       this.setState(state => ({
         zooming: eventType === 'wheel' ? true : state.zooming,
         zoomDirection: 'None',
@@ -68,7 +68,7 @@ export class Zoomable extends React.Component {
     }
     const zoomEndHandler = () => {
       const eventType = d3.event.sourceEvent ? d3.event.sourceEvent.type : ''
-      // console.log(`Zoom END - ${eventType} (${new Date().getTime()})`)
+      console.log(`Zoom END - ${eventType} (${new Date().getTime()})`)
       this.setState(state => ({
         zooming: false,
         zoomDirection: 'None',
@@ -172,7 +172,7 @@ Zoomable.propTypes = {
 
 export function withZoom(BiteGraph) {
   return props => (
-    <Zoomable maxZoomLevel={props.data.length / 2}>
+    <Zoomable maxZoomLevel={props.data.length}>
       {(fetchZoombaseRef, { zoomTransform, zooming, panning }) => (
         <BiteGraph
           zoombaseRef={fetchZoombaseRef}

@@ -1,0 +1,6 @@
+/* src/components/Axis/Axis.css */
+
+.axis.time,
+.axis.data {
+  font-size: 0.6rem;
+}
