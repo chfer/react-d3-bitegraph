@@ -65,6 +65,7 @@ export default class App extends React.Component {
               data={this.state.analogData}
               stateName={this.analogStateName}
               unit={this.analogUnit}
+              transition={false}
             />
           </Col>
           <Col xs={12} md={1}>
@@ -80,6 +81,7 @@ export default class App extends React.Component {
               domain={this.discreteDomain}
               colorScale={this.colorScale}
               stateName={this.discreteStateName}
+              transition={false}
             />
           </Col>
           <Col xs={12} md={1}>

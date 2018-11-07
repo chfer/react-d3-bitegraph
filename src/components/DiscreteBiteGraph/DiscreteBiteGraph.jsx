@@ -3,6 +3,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { getVisibleDataSlice } from '../common/helpers'
+import simplifyDiscreteData from './simplifyDiscreteData'
 import { createTimeScale, createDiscreteScale } from '../common/biteGraphScales'
 import DataAreaRect from '../common/DataAreaRect.jsx'
 import ClipPath from '../common/ClipPath.jsx'
@@ -45,9 +47,20 @@ export function DiscreteBiteGraph(props) {
   const timeScale = zoomTransform
     ? zoomTransform.rescaleX(initialTimeScale)
     : initialTimeScale
+  let { visibleData } = getVisibleDataSlice(data, dataWidth, timeScale, 10)
+  console.group('DiscreteBiteGraph')
+  console.log(`Visible data slice: ${visibleData.length} points ...`)
+  const MAXPIXELCOUNT = 500
+  if (visibleData.length > MAXPIXELCOUNT) {
+    // simplify the data
+    visibleData = simplifyDiscreteData(visibleData, MAXPIXELCOUNT)
+    console.log(`Simplified the data to ${visibleData.length} points ...`)
+  }
   // Define a reference to an overlay rectangle which contains the data area of the graph
   // this overlay rectangle will capture mouse events for the DataReader component and zoom
   let dataAreaRectRef = null
+  console.log(`zoomTransform: ${JSON.stringify(zoomTransform)}`)
+  console.groupEnd()
   return (
     <svg
       className="BiteGraph discrete"
@@ -64,18 +77,18 @@ export function DiscreteBiteGraph(props) {
           dataAreaRectRef = el
         }}
       />
+      <TimeAxis scale={timeScale} dataHeight={dataHeight} />
+      <DataAxis scale={dataScale} />
+      <YAxisLegend y={-paddingLeft} dy="1.5em" text={`${stateName.long}`} />
       <ClipPath
         width={dataWidth}
         height={dataHeight}
         id="BiteGraph-discrete-clippath"
       />
-      <TimeAxis scale={timeScale} dataHeight={dataHeight} />
-      <DataAxis scale={dataScale} />
-      <YAxisLegend y={-paddingLeft} dy="1.5em" text={`${stateName.long}`} />
       <DiscreteDataLayer
         timeScale={timeScale}
         dataScale={dataScale}
-        data={data}
+        data={visibleData}
         colorScale={colorScale}
         baseVal={domain[0]}
         transition={transition}
@@ -113,8 +126,7 @@ DiscreteBiteGraph.defaultProps = {
   colorScale: () => '#007bff',
   zoomTransform: null,
   dataReader: true,
-  transition: true,
-  svgRef: () => {}
+  transition: true
 }
 
 DiscreteBiteGraph.propTypes = {

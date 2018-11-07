@@ -10,21 +10,13 @@ import { getVisibleDataSlice } from '../common/helpers'
 
 export default class AnalogDataLayer extends React.Component {
   componentDidMount() {
-    this.renderLine(true)
+    this.renderLine()
     console.log('Mounted AnalogDataLayer ...')
-    // console.timeEnd('AnalogDataLayer')
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { data } = this.props
-    const { data: prevData } = prevProps
-    if (data !== prevData) {
-      // Draw a new <path /> when the data has changed
-      this.renderLine(false)
-      // console.log('AnalogDataLayer - called renderline...')
-    }
-    // console.log('Updated AnalogDataLayer ...')
-    // console.timeEnd('AnalogDataLayer')
+    this.renderLine()
+    console.log('Updated AnalogDataLayer ...')
   }
 
   scaleData(data) {
@@ -35,15 +27,15 @@ export default class AnalogDataLayer extends React.Component {
     }))
   }
 
-  renderLine(initialMount) {
-    const { timeScale, data, dataScale } = this.props
+  renderLine() {
+    const { timeScale, data, dataScale, transition } = this.props
 
     const dataPath = d3
       .line()
       .x(entry => timeScale(entry.time))
       .y(entry => dataScale(entry.value))
     let dataPathRef = d3.select(this.refs.dataPath)
-    if (initialMount) {
+    if (transition) {
       dataPathRef = dataPathRef.transition().duration(500)
     }
     dataPathRef.attr('d', dataPath(data))
@@ -68,9 +60,14 @@ export default class AnalogDataLayer extends React.Component {
   }
 }
 
+AnalogDataLayer.defaultProps = {
+  transition: true
+}
+
 AnalogDataLayer.propTypes = {
   timeScale: PropTypes.func.isRequired,
   dataScale: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(measurementDataType).isRequired,
+  transition: PropTypes.bool,
   clipPathId: PropTypes.string
 }
