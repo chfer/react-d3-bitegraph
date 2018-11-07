@@ -129,6 +129,13 @@ export class Zoomable extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.zoom) {
+      // update the zoom extent
+      this.zoom.scaleExtent([1, this.props.maxZoomLevel])
+    }
+  }
+
   render() {
     const {
       zooming,
@@ -170,18 +177,39 @@ Zoomable.propTypes = {
   maxZoomLevel: PropTypes.number
 }
 
+// export function withZoom(BiteGraph) {
+//   return props => (
+//     <Zoomable maxZoomLevel={props.data.length}>
+//       {(fetchZoombaseRef, { zoomTransform, zooming, panning }) => (
+//         <BiteGraph
+//           zoombaseRef={fetchZoombaseRef}
+//           zoomTransform={zoomTransform}
+//           dataReader={!(panning || zooming)}
+//           transition={!(panning || zooming)}
+//           {...props}
+//         />
+//       )}
+//     </Zoomable>
+//   )
+// }
+
 export function withZoom(BiteGraph) {
-  return props => (
-    <Zoomable maxZoomLevel={props.data.length}>
-      {(fetchZoombaseRef, { zoomTransform, zooming, panning }) => (
-        <BiteGraph
-          zoombaseRef={fetchZoombaseRef}
-          zoomTransform={zoomTransform}
-          dataReader={!(panning || zooming)}
-          transition={!(panning || zooming)}
-          {...props}
-        />
-      )}
-    </Zoomable>
-  )
+  return props => {
+    console.group('withZoom')
+    console.log(`maxZoomLevel: ${props.data.length / 2}`)
+    console.groupEnd()
+    return (
+      <Zoomable maxZoomLevel={props.data.length / 2}>
+        {(fetchZoombaseRef, { zoomTransform, zooming, panning }) => (
+          <BiteGraph
+            zoombaseRef={fetchZoombaseRef}
+            zoomTransform={zoomTransform}
+            dataReader={!(panning || zooming)}
+            transition={!(panning || zooming)}
+            {...props}
+          />
+        )}
+      </Zoomable>
+    )
+  }
 }
